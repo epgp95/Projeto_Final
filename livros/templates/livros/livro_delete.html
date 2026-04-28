@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apagar Livro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #d6e0e9; }
+        .container {
+            width: 420px;
+            margin: 100px auto;
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #c0392b; margin-top: 0; }
+        p { color: #444; }
+        button {
+            padding: 9px 16px;
+            margin: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-delete { background: #e74c3c; color: white; }
+        .btn-delete:hover { background: #c0392b; }
+        .btn-cancel {
+            display: inline-block;
+            background: #bdc3c7;
+            color: #333;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .btn-cancel:hover { background: #a8b0b5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Confirmar Remoção</h1>
+        <p>Pretende mesmo remover o livro <strong>"{{ livro.titulo }}"</strong>?</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">🗑 Apagar</button>
+        </form>
+        <br>
+        <a href="{% url 'lista_livros' %}" class="btn-cancel">Cancelar</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All You Can Read</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #d6e0e9; margin: 0; padding: 0; }
+        .container { width: 750px; margin: 40px auto; }
+        h1 { color: #1e4f9b; }
+        .btn {
+            display: inline-block; padding: 8px 12px; background: #1e4f9b;
+            color: white; text-decoration: none; border-radius: 4px; margin-bottom: 15px;
+        }
+        .btn:hover { background: #163a75; }
+        .filters {
+            background: #eaf0f7; padding: 14px; border-radius: 6px;
+            margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+        }
+        .filters input, .filters select {
+            padding: 6px 8px; border: 1px solid #b0c4d8; border-radius: 4px; font-size: 14px;
+        }
+        .filters label { font-size: 12px; color: #555; display: block; margin-bottom: 2px; }
+        .filter-group { display: flex; flex-direction: column; }
+        .filters button {
+            padding: 7px 14px; background: #1e4f9b; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+        .filters button:hover { background: #163a75; }
+        .livro-item {
+            background: white; padding: 12px 16px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid #1e4f9b; border-radius: 0 4px 4px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .livro-item.vendido { border-left-color: #aaa; opacity: 0.75; }
+        .livro-info strong { font-size: 15px; color: #1a1a1a; }
+        .meta { font-size: 12px; color: #888; margin-top: 4px; }
+        .estado { margin-top: 4px; font-size: 13px; font-weight: bold; }
+        .estado.disponivel { color: #2a7a4b; }
+        .estado.vendido-txt { color: #999; }
+        .actions { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+        .actions a {
+            display: block; text-align: center; padding: 5px 10px;
+            border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold;
+        }
+        .btn-toggle { background: #eaf0f7; color: #1e4f9b; border: 1px solid #b0c4d8; }
+        .btn-toggle:hover { background: #d0dff0; }
+        .btn-edit { background: #fff8e1; color: #b85c00; border: 1px solid #f0d080; }
+        .btn-edit:hover { background: #fdefc0; }
+        .btn-delete { background: #fdecea; color: #c0392b; border: 1px solid #f0b0aa; }
+        .btn-delete:hover { background: #fcd0cc; }
+        .empty { color: #888; font-style: italic; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>All You Can Read</h1>
+        <a href="{% url 'adicionar_livro' %}" class="btn">+ Adicionar Livro</a>
+
+        <form method="GET" class="filters">
+
+            <div class="filter-group">
+                <label>Pesquisar</label>
+                <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Título ou autor...">
+            </div>
+
+            <div class="filter-group">
+                <label>Utilizador</label>
+                <input type="text" name="utilizador" value="{{ request.GET.utilizador }}" placeholder="Nome do utilizador...">
+            </div>
+
+            <div class="filter-group">
+                <label>Tipo</label>
+                <select name="tipo">
+                    <option value="">Todos</option>
+                    <option value="capa_mole" {% if request.GET.tipo == "capa_mole" %}selected{% endif %}>Capa Mole</option>
+                    <option value="capa_dura" {% if request.GET.tipo == "capa_dura" %}selected{% endif %}>Capa Dura</option>
+                    <option value="bolso" {% if request.GET.tipo == "bolso" %}selected{% endif %}>Livro de Bolso</option>
+                    <option value="outro" {% if request.GET.tipo == "outro" %}selected{% endif %}>Outro</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Ano</label>
+                <input type="number" name="ano" value="{{ request.GET.ano }}" placeholder="ex: 2020" min="1900" max="2099">
+            </div>
+
+            <div class="filter-group">
+                <label>Preço mínimo (€)</label>
+                <input type="number" name="min_preco" value="{{ request.GET.min_preco }}" placeholder="0.00" step="0.01" min="0">
+            </div>
+
+            <div class="filter-group">
+                <label>Preço máximo (€)</label>
+                <input type="number" name="max_preco" value="{{ request.GET.max_preco }}" placeholder="999.99" step="0.01" min="0">
+            </div>
+
+            <div class="filter-group">
+                <label>Estado</label>
+                <select name="status">
+                    <option value="">Todos</option>
+                    <option value="disponivel" {% if request.GET.status == "disponivel" %}selected{% endif %}>Disponíveis</option>
+                    <option value="vendido" {% if request.GET.status == "vendido" %}selected{% endif %}>Vendidos</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Ordenar por</label>
+                <select name="sort">
+                    <option value="-created_at" {% if request.GET.sort == "-created_at" %}selected{% endif %}>Mais recentes</option>
+                    <option value="created_at"  {% if request.GET.sort == "created_at"  %}selected{% endif %}>Mais antigos</option>
+                    <option value="titulo"      {% if request.GET.sort == "titulo"      %}selected{% endif %}>Título A-Z</option>
+                    <option value="-titulo"     {% if request.GET.sort == "-titulo"     %}selected{% endif %}>Título Z-A</option>
+                    <option value="autor"       {% if request.GET.sort == "autor"       %}selected{% endif %}>Autor A-Z</option>
+                    <option value="-autor"      {% if request.GET.sort == "-autor"      %}selected{% endif %}>Autor Z-A</option>
+                    <option value="preco"       {% if request.GET.sort == "preco"       %}selected{% endif %}>Preço ↑</option>
+                    <option value="-preco"      {% if request.GET.sort == "-preco"      %}selected{% endif %}>Preço ↓</option>
+                    <option value="stock"       {% if request.GET.sort == "stock"       %}selected{% endif %}>Stock ↑</option>
+                    <option value="-stock"      {% if request.GET.sort == "-stock"      %}selected{% endif %}>Stock ↓</option>
+                </select>
+            </div>
+
+            <div class="filter-group" style="justify-content: flex-end;">
+                <button type="submit">Filtrar</button>
+            </div>
+
+            <div class="filter-group" style="justify-content: flex-end;">
+                <a href="{% url 'lista_livros' %}" class="btn" style="margin-bottom:0;">Limpar filtros</a>
+            </div>
+
+        </form>
+
+        {% for livro in livros %}
+        <div class="livro-item {% if livro.vendido %}vendido{% endif %}">
+            <div class="livro-info">
+                <strong>
+                    {% if livro.vendido %}<s>{{ livro.titulo }}</s>{% else %}{{ livro.titulo }}{% endif %}
+                </strong>
+                <div class="meta">
+                    {{ livro.autor }} &nbsp;|&nbsp;
+                    {{ livro.get_tipo_display }} &nbsp;|&nbsp;
+                    {% if livro.ano %}{{ livro.ano }}{% else %}s/ano{% endif %} &nbsp;|&nbsp;
+                    {{ livro.preco }}€ &nbsp;|&nbsp;
+                    Stock: {{ livro.stock }}
+                </div>
+                <div class="estado {% if livro.vendido %}vendido-txt{% else %}disponivel{% endif %}">
+                    {% if livro.vendido %}Vendido{% else %}Disponível{% endif %}
+                </div>
+            </div>
+            <div class="actions">
+                <a href="{% url 'toggle_vendido' livro.id %}" class="btn-toggle">
+                    {% if livro.vendido %}✓ Marcar Disponível{% else %}✓ Marcar Vendido{% endif %}
+                </a>
+                <a href="{% url 'livro_update' livro.id %}" class="btn-edit">✏️ Editar</a>
+                <a href="{% url 'livro_delete' livro.id %}" class="btn-delete">🗑 Apagar</a>
+            </div>
+        </div>
+        {% empty %}
+            <p class="empty">Nenhum livro encontrado.</p>
+        {% endfor %}
+
+    </div>
+</body>
+</html>
