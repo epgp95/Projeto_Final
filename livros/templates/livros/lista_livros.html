@@ -56,7 +56,14 @@
 <body>
     <div class="container">
 
-        <h1>All You Can Read</h1>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1>All You Can Read</h1>
+            <div>
+                <span style="font-size:13px; color:#555;">{{ request.user.username }}</span>
+                <a href="{% url 'logout' %}" style="margin-left:12px; color:#c0392b; font-size:13px;">Terminar sessão</a>
+            </div>
+        </div>
+
         <a href="{% url 'adicionar_livro' %}" class="btn">+ Adicionar Livro</a>
 
         <form method="GET" class="filters">
@@ -72,6 +79,11 @@
             </div>
 
             <div class="filter-group">
+                <label>Género</label>
+                <input type="text" name="genero" value="{{ request.GET.genero }}" placeholder="ex: Romance, Ficção...">
+            </div>
+
+            <div class="filter-group">
                 <label>Tipo</label>
                 <select name="tipo">
                     <option value="">Todos</option>
@@ -84,7 +96,7 @@
 
             <div class="filter-group">
                 <label>Ano</label>
-                <input type="number" name="ano" value="{{ request.GET.ano }}" placeholder="ex: 2020" min="1900" max="2099">
+                <input type="number" name="ano" value="{{ request.GET.ano }}" placeholder="ex: 2020" min="1" max="2099">
             </div>
 
             <div class="filter-group">
@@ -141,9 +153,14 @@
                 <div class="meta">
                     {{ livro.autor }} &nbsp;|&nbsp;
                     {{ livro.get_tipo_display }} &nbsp;|&nbsp;
+                    {% if livro.genero %}{{ livro.genero }} &nbsp;|&nbsp;{% endif %}
                     {% if livro.ano %}{{ livro.ano }}{% else %}s/ano{% endif %} &nbsp;|&nbsp;
                     {{ livro.preco }}€ &nbsp;|&nbsp;
-                    Stock: {{ livro.stock }}
+                    Stock: {{ livro.stock }} &nbsp;|&nbsp;
+                    Vendedor: {{ livro.proprietario.username }}
+                    {% if livro.proprietario.email %}
+                     — {{ livro.proprietario.email }}
+                    {% endif %}
                 </div>
                 <div class="estado {% if livro.vendido %}vendido-txt{% else %}disponivel{% endif %}">
                     {% if livro.vendido %}Vendido{% else %}Disponível{% endif %}

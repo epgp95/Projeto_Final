@@ -37,11 +37,11 @@
             <label>Autor</label>
             <input type="text" name="autor" value="{{ livro.autor|default:'' }}" placeholder="Nome do autor">
 
-            <label>Preço (€)</label>
-            <input type="number" name="preco" value="{{ livro.preco|default:'' }}" placeholder="0.00" step="0.01" min="0">
+            <label>Género</label>
+            <input type="text" name="genero" value="{{ livro.genero|default:'' }}" placeholder="ex: Romance, Ficção, Aventura...">
 
-            <label>Stock (unidades)</label>
-            <input type="number" name="stock" value="{{ livro.stock|default:1 }}" min="1">
+            <label>Email de contacto</label>
+            <input type="email" name="email_contacto" value="{{ livro.email_contacto|default:'' }}" placeholder="ex: email@exemplo.com">
 
             <label>Tipo</label>
             <select name="tipo">
@@ -52,7 +52,13 @@
             </select>
 
             <label>Ano de publicação</label>
-            <input type="number" name="ano" value="{{ livro.ano|default:'' }}" placeholder="ex: 2020" min="1900" max="2099">
+            <input type="number" name="ano" value="{{ livro.ano|default:'' }}" placeholder="ex: 2020" min="1" max="2099">
+
+            <label>Preço (€)</label>
+            <input type="number" name="preco" value="{{ livro.preco|default:'' }}" placeholder="0.00" step="0.01" min="0">
+
+            <label>Stock (unidades)</label>
+            <input type="number" name="stock" value="{{ livro.stock|default:1 }}" min="1">
 
             <button type="submit">Guardar</button>
         </form>

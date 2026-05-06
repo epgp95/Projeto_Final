@@ -15,6 +15,8 @@ class Livro(models.Model):
     stock = models.IntegerField(default=1)
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='outro')
     ano = models.IntegerField(null=True, blank=True)
+    genero = models.CharField(max_length=100, blank=True, default='')
+    email_contacto = models.EmailField(blank=True, default='')
     vendido = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     proprietario = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
