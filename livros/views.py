@@ -18,6 +18,13 @@ def registo(request):
 @login_required
 def lista_livros(request):
     livros = Livro.objects.all()
+    if not request.user.is_authenticated:
+        livros = livros.filter(vendido=False, stock__gt=0)
+    else:
+        outros = livros.exclude(proprietario=request.user).filter(vendido=False, stock__gt=0)
+        meus = livros.filter(proprietario=request.user)
+        from django.db.models import QuerySet
+        livros = meus | outros
 
     search = request.GET.get("search")
     if search:
@@ -71,6 +78,7 @@ def adicionar_livro(request):
         tipo = request.POST.get("tipo")
         ano = request.POST.get("ano")
         genero = request.POST.get("genero")
+        email_contacto = request.POST.get("email_contacto")
         if titulo and autor and preco:
             Livro.objects.create(titulo=titulo, autor=autor, preco=preco,
                                  stock=stock, tipo=tipo, ano=ano, genero=genero,
@@ -98,6 +106,7 @@ def livro_update(request, id):
         tipo = request.POST.get("tipo")
         ano = request.POST.get("ano")
         genero = request.POST.get("genero")
+        email_contacto = request.POST.get("email_contacto")
         if titulo and autor and preco:
             livro.titulo = titulo
             livro.autor = autor
@@ -106,6 +115,7 @@ def livro_update(request, id):
             livro.tipo = tipo
             livro.ano = ano
             livro.genero = genero
+            livro.email_contacto = email_contacto
             livro.save()
             return redirect("lista_livros")
     return render(request, "livros/livro_form.html", {"livro": livro})

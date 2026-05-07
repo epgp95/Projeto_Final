@@ -60,7 +60,10 @@
             <h1>All You Can Read</h1>
             <div>
                 <span style="font-size:13px; color:#555;">{{ request.user.username }}</span>
-                <a href="{% url 'logout' %}" style="margin-left:12px; color:#c0392b; font-size:13px;">Terminar sessão</a>
+                <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" style="background:none; border:none; color:#c0392b; font-size:13px; cursor:pointer; margin-left:12px;">Terminar sessão</button>
+</form>
             </div>
         </div>
 
@@ -158,20 +161,23 @@
                     {{ livro.preco }}€ &nbsp;|&nbsp;
                     Stock: {{ livro.stock }} &nbsp;|&nbsp;
                     Vendedor: {{ livro.proprietario.username }}
-                    {% if livro.proprietario.email %}
-                     — {{ livro.proprietario.email }}
+                    {% if livro.email_contacto %}
+                     — {{ livro.email_contacto }}
                     {% endif %}
+
                 </div>
                 <div class="estado {% if livro.vendido %}vendido-txt{% else %}disponivel{% endif %}">
                     {% if livro.vendido %}Vendido{% else %}Disponível{% endif %}
                 </div>
             </div>
             <div class="actions">
-                <a href="{% url 'toggle_vendido' livro.id %}" class="btn-toggle">
-                    {% if livro.vendido %}✓ Marcar Disponível{% else %}✓ Marcar Vendido{% endif %}
-                </a>
-                <a href="{% url 'livro_update' livro.id %}" class="btn-edit">✏️ Editar</a>
-                <a href="{% url 'livro_delete' livro.id %}" class="btn-delete">🗑 Apagar</a>
+                {% if livro.proprietario == request.user %}
+                    <a href="{% url 'toggle_vendido' livro.id %}" class="btn-toggle">
+                        {% if livro.vendido %}✓ Marcar Disponível{% else %}✓ Marcar Vendido{% endif %}
+                    </a>
+                    <a href="{% url 'livro_update' livro.id %}" class="btn-edit">✏️ Editar</a>
+                    <a href="{% url 'livro_delete' livro.id %}" class="btn-delete">🗑 Apagar</a>
+                {% endif %}
             </div>
         </div>
         {% empty %}
